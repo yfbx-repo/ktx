@@ -17,7 +17,7 @@ import kotlin.reflect.KProperty
  */
 inline fun <reified T> prefs(defaultValue: T) = object : ReadWriteProperty<Any?, T> {
 
-    private val prefs by lazy { prefFile("app_prefs") }
+    private val prefs = getPrefs("app_prefs")
 
     override fun getValue(thisRef: Any?, property: KProperty<*>): T {
         val value = prefs.all[property.name]
@@ -47,7 +47,7 @@ inline fun <reified T> prefs(defaultValue: T) = object : ReadWriteProperty<Any?,
 inline fun <reified T> prefs(key: String, defaultValue: T, prefName: String) =
     object : ReadWriteProperty<Any?, T> {
 
-        private val prefs by lazy { prefFile(prefName) }
+        private val prefs = getPrefs(prefName)
 
         override fun getValue(thisRef: Any?, property: KProperty<*>): T {
             val value = prefs.all[key]
@@ -66,10 +66,10 @@ inline fun <reified T> prefs(key: String, defaultValue: T, prefName: String) =
         }
     }
 
-fun prefFile(name: String): SharedPreferences {
-    return AppProvider.context.getSharedPreferences(name, Context.MODE_PRIVATE)
+fun getPrefs(fileName: String): SharedPreferences {
+    return AppProvider.context.getSharedPreferences(fileName, Context.MODE_PRIVATE)
 }
 
-fun clearPref(name: String) {
-    prefFile(name).edit().clear().apply()
+fun clearPrefs(fileName: String) {
+    getPrefs(fileName).edit().clear().apply()
 }
